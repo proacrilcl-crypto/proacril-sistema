@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proacril - Sistema de Pedidos</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<div class="sidebar">
+<h2>PROACRIL</h2>
+
+<button onclick="showPage('dashboard')">Dashboard</button>
+<button onclick="showPage('pedidos')">Pedidos</button>
+<button onclick="showPage('nuevo')">Nuevo Pedido</button>
+
+</div>
+
+<div class="content">
+
+<div id="dashboard" class="page">
+
+<h1>Dashboard</h1>
+
+<div class="cards">
+
+<div class="card">
+<h3>Ingresos Confirmados</h3>
+<p id="ingresos">$0</p>
+</div>
+
+<div class="card">
+<h3>Abonos</h3>
+<p id="abonos">$0</p>
+</div>
+
+<div class="card">
+<h3>Total Pedidos</h3>
+<p id="totalPedidos">0</p>
+</div>
+
+</div>
+
+</div>
+
+<div id="pedidos" class="page" style="display:none;">
+
+<h1>Pedidos</h1>
+
+<table>
+
+<thead>
+
+<tr>
+<th>ID</th>
+<th>Cliente</th>
+<th>Teléfono</th>
+<th>Descripción</th>
+<th>Vendedor</th>
+<th>Valor</th>
+<th>Abono</th>
+<th>Saldo</th>
+<th>Estado</th>
+</tr>
+
+</thead>
+
+<tbody id="tablaPedidos"></tbody>
+
+</table>
+
+</div>
+
+<div id="nuevo" class="page" style="display:none;">
+
+<h1>Nuevo Pedido</h1>
+
+<label>Cliente</label>
+<input id="cliente">
+
+<label>Teléfono</label>
+<input id="telefono">
+
+<label>Descripción</label>
+<input id="descripcion">
+
+<label>Vendedor</label>
+<input id="vendedor">
+
+<label>Valor total</label>
+<input id="valor" type="number">
+
+<label>Abono</label>
+<input id="abono" type="number">
+
+<label>Estado</label>
+
+<select id="estado">
+
+<option>Agendado</option>
+<option>En producción</option>
+<option>En traslado</option>
+<option>Entregado</option>
+<option>Retirado</option>
+
+</select>
+
+<button onclick="guardarPedido()">Guardar Pedido</button>
+
+</div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
