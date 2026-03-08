@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Asociados P&A - Sistema de Gestión</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+  <div id="loginView" class="login-wrap">
+    <div class="login-card">
+      <h1>Asociados P&A</h1>
+      <p class="muted">Sistema de gestión</p>
+      <label>Correo</label>
+      <input id="loginEmail" type="email" placeholder="admin@asociadospa.cl" />
+      <label>Contraseña</label>
+      <input id="loginPassword" type="password" placeholder="••••••••" />
+      <button id="loginBtn">Ingresar</button>
+      <p id="loginMsg" class="muted"></p>
+    </div>
+  </div>
+
+  <div id="appView" class="app hidden">
+    <aside class="sidebar">
+      <div>
+        <h2>Asociados P&A</h2>
+        <p class="muted small" id="userInfoLabel">Sin sesión</p>
+      </div>
+      <button class="nav-btn active" data-page="dashboardPage">Dashboard</button>
+      <button class="nav-btn" data-page="pedidosPage">Pedidos</button>
+      <button class="nav-btn" data-page="nuevoPedidoPage">Nuevo Pedido</button>
+      <button class="nav-btn" data-page="gastosPage" id="gastosNavBtn">Gastos</button>
+      <button class="nav-btn" data-page="comisionesPage">Comisiones</button>
+      <button id="logoutBtn" class="danger logout-btn">Cerrar sesión</button>
+    </aside>
+
+    <main class="content">
+      <section id="dashboardPage" class="page">
+        <div class="page-header"><h1>Dashboard</h1></div>
+        <div class="cards">
+          <div class="card"><h3>Ingresos disponibles</h3><p id="dashIngresos">$0</p></div>
+          <div class="card"><h3>Abonos pendientes</h3><p id="dashAbonos">$0</p></div>
+          <div class="card admin-only"><h3>Gastos</h3><p id="dashGastos">$0</p></div>
+          <div class="card admin-only"><h3>Ganancia real</h3><p id="dashGanancia">$0</p></div>
+          <div class="card"><h3>Pedidos activos</h3><p id="dashActivos">0</p></div>
+          <div class="card"><h3>Pedidos del día</h3><p id="dashHoy">0</p></div>
+        </div>
+        <div class="panel">
+          <div class="page-header">
+            <h2>Producción del día</h2>
+            <button id="btnIrNuevoPedido" class="secondary">Agregar pedido</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>N°</th><th>Cliente</th><th>Descripción</th><th>Estado</th><th>Fecha entrega</th></tr></thead>
+              <tbody id="tablaHoy"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="pedidosPage" class="page hidden">
+        <div class="page-header"><h1>Pedidos</h1></div>
+        <div class="filters">
+          <div><label>Desde</label><input id="filtroDesde" type="date" /></div>
+          <div><label>Hasta</label><input id="filtroHasta" type="date" /></div>
+          <div><label>Estado</label>
+            <select id="filtroEstado">
+              <option value="">Todos</option><option>Cotización</option><option>Agendado</option><option>En diseño</option>
+              <option>En producción</option><option>En traslado</option><option>Entregado</option><option>Retirado</option><option>Cancelado</option>
+            </select>
+          </div>
+          <div><label>Vendedor</label><select id="filtroVendedor"><option value="">Todos</option></select></div>
+          <div><label>Cliente</label><input id="filtroCliente" placeholder="Buscar cliente" /></div>
+          <div class="filter-actions"><button id="btnFiltrarPedidos">Filtrar</button><button id="btnLimpiarFiltros" class="secondary">Limpiar</button></div>
+        </div>
+        <div class="panel">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>N°</th><th>Cliente</th><th>Vendedor</th><th>Total</th><th>Abono</th><th>Saldo</th><th>Estado</th><th>Entrega</th><th>Acciones</th></tr></thead>
+              <tbody id="tablaPedidos"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="nuevoPedidoPage" class="page hidden">
+        <div class="page-header"><h1 id="pedidoFormTitle">Nuevo Pedido</h1></div>
+        <form id="pedidoForm" class="grid-form">
+          <input type="hidden" id="pedidoDocId" />
+          <div><label>Cliente</label><input id="cliente" required /></div>
+          <div><label>Teléfono</label><input id="telefono" /></div>
+          <div><label>Tipo de entrega</label><select id="tipoEntrega"><option value="Retiro">Retiro</option><option value="Delivery">Delivery</option></select></div>
+          <div><label>Vendedor</label><select id="vendedor"></select></div>
+          <div class="full"><label>Dirección</label><input id="direccion" /></div>
+          <div><label>Comuna</label><input id="comuna" /></div>
+          <div><label>Referencia</label><input id="referencia" /></div>
+          <div class="full"><label>Descripción del pedido</label><textarea id="descripcion" required></textarea></div>
+          <div><label>Fecha ingreso</label><input id="fechaIngreso" type="date" required /></div>
+          <div><label>Fecha entrega</label><input id="fechaEntrega" type="date" required /></div>
+          <div><label>Valor del pedido</label><input id="valorPedido" type="number" min="0" value="0" /></div>
+          <div><label>Valor delivery</label><input id="valorDelivery" type="number" min="0" value="0" /></div>
+          <div><label>Abono</label><input id="abono" type="number" min="0" value="0" /></div>
+          <div><label>Estado</label>
+            <select id="estado">
+              <option>Cotización</option><option selected>Agendado</option><option>En diseño</option><option>En producción</option>
+              <option>En traslado</option><option>Entregado</option><option>Retirado</option><option>Cancelado</option>
+            </select>
+          </div>
+          <div><label>Total</label><input id="totalPedido" readonly /></div>
+          <div><label>Saldo</label><input id="saldoPendiente" readonly /></div>
+          <div class="full button-row">
+            <button type="submit" id="btnGuardarPedido">Guardar pedido</button>
+            <button type="button" id="btnCancelarEdicion" class="secondary hidden">Cancelar edición</button>
+          </div>
+        </form>
+      </section>
+
+      <section id="gastosPage" class="page hidden admin-only-page">
+        <div class="page-header"><h1>Gastos</h1></div>
+        <form id="gastoForm" class="grid-form compact">
+          <input type="hidden" id="gastoDocId" />
+          <div><label>Fecha</label><input id="gastoFecha" type="date" required /></div>
+          <div><label>Descripción</label><input id="gastoDescripcion" required /></div>
+          <div><label>Categoría</label>
+            <select id="gastoCategoria">
+              <option>Compra acrílico</option><option>Herramientas</option><option>Combustible</option>
+              <option>Publicidad</option><option>Pago comisiones</option><option>Otros</option>
+            </select>
+          </div>
+          <div><label>Monto</label><input id="gastoMonto" type="number" min="0" value="0" required /></div>
+          <div class="full button-row">
+            <button type="submit">Guardar gasto</button>
+            <button type="button" id="btnCancelarGasto" class="secondary hidden">Cancelar</button>
+          </div>
+        </form>
+        <div class="panel">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Fecha</th><th>Descripción</th><th>Categoría</th><th>Monto</th><th>Acciones</th></tr></thead>
+              <tbody id="tablaGastos"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="comisionesPage" class="page hidden">
+        <div class="page-header"><h1>Comisiones</h1></div>
+        <div class="filters">
+          <div><label>Fecha inicio</label><input id="comisionInicio" type="date" /></div>
+          <div><label>Fecha fin</label><input id="comisionFin" type="date" /></div>
+          <div><label>Vendedor</label><select id="comisionVendedor"><option value="">Seleccione</option></select></div>
+          <div class="filter-actions"><button id="btnCalcularComision">Calcular</button></div>
+        </div>
+        <div class="cards two">
+          <div class="card"><h3>Total vendido</h3><p id="comisionTotal">$0</p></div>
+          <div class="card"><h3>Comisión 10%</h3><p id="comisionMonto">$0</p></div>
+        </div>
+        <div class="panel">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>N°</th><th>Cliente</th><th>Vendedor</th><th>Estado</th><th>Total</th></tr></thead>
+              <tbody id="tablaComisiones"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+      <p id="statusMsg" class="muted status"></p>
+    </main>
+  </div>
+
+  <script type="module" src="firebase.js"></script>
+  <script type="module" src="script.js"></script>
+</body>
+</html>
